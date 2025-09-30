@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>External App</title>
+</head>
+<body>
+  <h2>External App</h2>
+  <div id="messageLog"></div>
+  <button id="sendBack">Send Message to Salesforce</button>
+
+  <script>
+    // Listen for messages from Salesforce
+    window.addEventListener("message", (event) => {
+      if (!event.origin.includes("lightning.force.com")) return; // security check
+      document.getElementById("messageLog").innerText =
+        "Received from Salesforce: " + JSON.stringify(event.data);
+    });
+
+    // Send a message back to Salesforce
+    document.getElementById("sendBack").addEventListener("click", () => {
+      window.parent.postMessage(
+        { action: "helloFromExternal", data: "I am a static page!" },
+        "*"
+      );
+    });
+  </script>
+</body>
+</html>
