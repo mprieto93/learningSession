@@ -3,24 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <title>External App</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #log { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+  </style>
 </head>
 <body>
   <h2>External App</h2>
-  <div id="messageLog"></div>
+  <p>Messages received from Salesforce will appear below:</p>
+  <div id="log">No messages yet</div>
+
   <button id="sendBack">Send Message to Salesforce</button>
 
   <script>
     // Listen for messages from Salesforce
     window.addEventListener("message", (event) => {
       if (!event.origin.includes("lightning.force.com")) return; // security check
-      document.getElementById("messageLog").innerText =
-        "Received from Salesforce: " + JSON.stringify(event.data);
+      document.getElementById("log").innerText =
+        "From Salesforce: " + JSON.stringify(event.data);
     });
 
     // Send a message back to Salesforce
     document.getElementById("sendBack").addEventListener("click", () => {
       window.parent.postMessage(
-        { action: "helloFromExternal", data: "I am a static page!" },
+        { action: "fromExternalApp", message: "Hello Salesforce, I'm a static page!" },
         "*"
       );
     });
