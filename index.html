@@ -29,7 +29,7 @@
     // Listen for messages from Salesforce
     window.addEventListener("message", (event) => {
       if (!event.origin.includes("lightning.force.com")) return;
-      logDiv.innerText = "From Salesforce: " + JSON.stringify(event.data);
+      logDiv.innerText = "From Salesforce: " + event.data?.message;
 
       // Auto-reply back
       window.parent.postMessage(
