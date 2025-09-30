@@ -5,30 +5,49 @@
   <title>External App</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    #log { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    #log { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    #outgoing { margin-top: 20px; }
   </style>
 </head>
 <body>
   <h2>External App</h2>
-  <p>Messages received from Salesforce will appear below:</p>
+
+  <p><strong>Messages from Salesforce:</strong></p>
   <div id="log">No messages yet</div>
 
-  <button id="sendBack">Send Message to Salesforce</button>
+  <div id="outgoing">
+    <label for="msgInput">Send message to Salesforce:</label><br/>
+    <input type="text" id="msgInput" placeholder="Type your message..." />
+    <button id="sendBtn">Send</button>
+  </div>
 
   <script>
+    const logDiv = document.getElementById("log");
+    const msgInput = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+
     // Listen for messages from Salesforce
     window.addEventListener("message", (event) => {
-      if (!event.origin.includes("lightning.force.com")) return; // security check
-      document.getElementById("log").innerText =
-        "From Salesforce: " + JSON.stringify(event.data);
+      if (!event.origin.includes("lightning.force.com")) return;
+      logDiv.innerText = "From Salesforce: " + JSON.stringify(event.data);
+
+      // Auto-reply back
+      window.parent.postMessage(
+        { action: "autoReply", message: "I got your message: " + event.data.message },
+        event.origin
+      );
     });
 
-    // Send a message back to Salesforce
-    document.getElementById("sendBack").addEventListener("click", () => {
-      window.parent.postMessage(
-        { action: "fromExternalApp", message: "Hello Salesforce, I'm a static page!" },
-        "*"
-      );
+    // Send typed message back to Salesforce
+    sendBtn.addEventListener("click", () => {
+      const text = msgInput.value;
+      if (text.trim() !== "") {
+        window.parent.postMessage(
+          { action: "fromExternalApp", message: text },
+          "*"
+        );
+        msgInput.value = ""; // clear after send
+      }
     });
   </script>
 </body>
