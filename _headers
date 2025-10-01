@@ -1,4 +1,4 @@
 /*
-  Content-Security-Policy: frame-ancestors https://your-org.lightning.force.com
+  Content-Security-Policy: frame-ancestors https://learningsessionbucharest25.netlify.app
   X-Content-Type-Options: nosniff
   X-Frame-Options: ALLOWALL
