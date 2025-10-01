@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>External App</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #log { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    #outgoing { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>External App</h2>
+
+  <p><strong>Messages from Salesforce:</strong></p>
+  <div id="log">No messages yet</div>
+
+  <div id="outgoing">
+    <label for="msgInput">Send message to Salesforce:</label><br/>
+    <input type="text" id="msgInput" placeholder="Type your message..." />
+    <button id="sendBtn">Send</button>
+  </div>
+
+  <script>
+    const logDiv = document.getElementById("log");
+    const msgInput = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // Listen for messages from Salesforce
+    window.addEventListener("message", (event) => {
+      if (!event.origin.includes("lightning.force.com")) return;
+      logDiv.innerText = "From Salesforce: " + event.data?.message;
+
+      // Auto-reply back
+      window.parent.postMessage(
+        { action: "autoReply", message: "I got your message: " + event.data.message },
+        event.origin
+      );
+    });
+
+    // Send typed message back to Salesforce
+    sendBtn.addEventListener("click", () => {
+      const text = msgInput.value;
+      if (text.trim() !== "") {
+        window.parent.postMessage(
+          { action: "fromExternalApp", message: text },
+          "*"
+        );
+        msgInput.value = ""; // clear after send
+      }
+    });
+  </script>
+</body>
+</html>
+
+<!-- https://your-org.lightning.force.com -->

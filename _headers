@@ -1,4 +1,4 @@
-/cspIndex.html
+/csp/index.html
   Content-Security-Policy: frame-ancestors https://my-org.lightning.force.com
   X-Content-Type-Options: nosniff
   X-Frame-Options: ALLOWALL
