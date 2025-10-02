@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>External Canvas App</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #log { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    #outgoing { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>External Canvas App</h2>
+
+  <p><strong>Messages from Salesforce:</strong></p>
+  <div id="log">No messages yet</div>
+
+  <div id="outgoing">
+    <label for="msgInput">Send message to Salesforce:</label><br/>
+    <input type="text" id="msgInput" placeholder="Type your message..." />
+    <button id="sendBtn">Send</button>
+  </div>
+
+  <!-- Load Canvas SDK from your Salesforce instance -->
+  <script src="https://littledipper-sea-5371.scratch.my.salesforce.com/canvas/sdk/js/canvas-all.js"></script>
+  <script>
+    const logDiv = document.getElementById("log");
+    const msgInput = document.getElementById("msgInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // Called when Canvas is ready
+    function onCanvasReady() {
+      // Subscribe to messages coming from Salesforce
+      Sfdc.canvas.client.subscribe(window.name, function(event) {
+        const msg = event.payload?.message || JSON.stringify(event.payload);
+        logDiv.innerText = "From Salesforce: " + msg;
+
+        // Optional auto-reply
+        Sfdc.canvas.client.publish(window.name, {
+          action: "autoReply",
+          message: "I got your message: " + msg
+        });
+      });
+    }
+
+    // Attach Canvas callback
+    Sfdc.canvas(function() {
+      onCanvasReady();
+    });
+
+    // Send typed message back to Salesforce
+    sendBtn.addEventListener("click", () => {
+      const text = msgInput.value.trim();
+      if (text !== "") {
+        Sfdc.canvas.client.publish(window.name, {
+          action: "fromExternalApp",
+          message: text
+        });
+        msgInput.value = "";
+      }
+    });
+  </script>
+</body>
+</html>
